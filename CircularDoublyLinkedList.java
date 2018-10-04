@@ -150,6 +150,8 @@ public class CircularDoublyLinkedList<E> {
 		}
 	}
 	
+	//Removes and returns the last element. If the list is empty it returns an empty node. If the list has a single 
+	//	element, it empties the list and returns the single node.
 	public Node<E> removeLast() {
 		if(size == 0)
 			return new Node<E>();
