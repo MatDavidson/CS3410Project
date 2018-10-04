@@ -149,4 +149,24 @@ public class CircularDoublyLinkedList<E> {
 			return temp;
 		}
 	}
+	
+	public Node<E> removeLast() {
+		if(size == 0)
+			return new Node<E>();
+		else if(size == 1) {
+			Node<E> temp = tail;
+			head = null;
+			tail = null;
+			size = 0;
+			return temp;
+		}
+		else {
+			Node<E> temp = tail;
+			tail = tail.getPrev();
+			head.setPrev(tail);
+			tail.setNext(head);
+			size--;
+			return temp;
+		}
+	}
 }
