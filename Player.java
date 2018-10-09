@@ -5,7 +5,7 @@ public class Player {
 	private String name;
 	private boolean hasOne = false;
 	private boolean hasDrawn = false;
-	private boolean hasPLayed = false;
+	private boolean hasPlayed = false;
 	private CircularDoublyLinkedList<Card> hand;
 	
 	public Player(String name) {
