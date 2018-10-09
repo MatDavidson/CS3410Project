@@ -7,7 +7,7 @@ public class Game {
 	private LinkedList<Card> deck;
 	private CircularDoublyLinkedList<Player> players;
 	private ArrayList<Card> discardPile = new ArrayList<>();
-	private boolean playerOrder;
+	private boolean playerOrder = true;
 	
 	public Game() {
 		
