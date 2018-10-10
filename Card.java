@@ -1,6 +1,6 @@
 package UnoGame;
 
-public class Card{
+public abstract class Card{
 
 	private String color;
 	
@@ -15,4 +15,6 @@ public class Card{
 	public boolean compareColor(String c) {
 		return color == c;
 	}
+	
+	public abstract String toString();
 }
