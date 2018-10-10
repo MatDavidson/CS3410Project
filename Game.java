@@ -13,11 +13,8 @@ public class Game {
 		
 	}
 	
-	public void setPlayerOrder() {
-		if(playerOrder == true)
-			playerOrder = false;
-		else
-			playerOrder = true;
+	public void reversePlayerOrder() {
+		playerOrder = !playerOrder;
 	}
 	
 	
