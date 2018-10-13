@@ -59,6 +59,14 @@ public class CircularDoublyLinkedList<E> {
 		this.size = 0;
 	}
 	
+	public boolean isEmpty() {
+		return head == null;
+	}
+	
+	public int getSize() {
+		return size;
+	}
+	
 	//Adds a node at the head of the list. 
 	public void addFirst(E e) {
 		Node<E> n = new Node<E>(e);
@@ -100,7 +108,7 @@ public class CircularDoublyLinkedList<E> {
 	}
 	
 	//Adds a node at a specified position.
-	public void add(int pos, E e) {
+	public void insertAtPos(int pos, E e) {
 		if(pos == 0)
 			addFirst(e);
 		
@@ -171,4 +179,70 @@ public class CircularDoublyLinkedList<E> {
 			return temp;
 		}
 	}
+	
+	public void deletetAtPos(int pos) {
+		if(pos == 1) {
+			if(size == 1) {
+				head = null;
+				tail = null;
+				size = 0;
+				return;
+			}
+			head = head.getNext();
+			head.setPrev(tail);
+			tail.setNext(head);
+			size--;
+			return;
+		}
+
+		else if(pos >= size) {
+			tail = tail.getPrev();
+			tail.setNext(head);
+			head.setPrev(tail);
+			size--;
+			return;
+		}
+
+		else {
+			Node<E> node1 = head;					
+			for(int i = 1; i < pos; i++) {
+				node1 = node1.getNext();			
+			}	
+			Node<E> n = node1.getNext();		
+			Node<E> p = node1.getPrev(); 		 
+
+			n.setPrev(p);
+			p.setNext(n);
+			size--;
+		}
+	}
+	
+	public String display() {
+		StringBuilder sB = new StringBuilder();
+		sB.append("\tCircular Doubly Linked List: ");
+		
+		if (size == 0) {
+			sB.append("empty.");
+			return sB.toString();
+		}
+			
+		Node<E> current = head;
+		sB.append(current.getElement().toString());
+		
+		if (current.getNext() == current)
+			return sB.toString();
+		
+		else
+			current = current.getNext();
+			while(current.getNext() != head) {
+				sB.append("\n\t" + current.getElement().toString());
+				current = current.getNext();
+			}
+			
+			sB.append("\n\t" + current.getElement().toString());
+			current = current.getNext();
+			sB.append("\n\t" + current.getElement().toString());
+			return sB.toString();
+	}
 }
+	
