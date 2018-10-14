@@ -180,7 +180,7 @@ public class CircularDoublyLinkedList<E> {
 		}
 	}
 	
-	public void deletetAtPos(int pos) {
+	public void deleteAtPos(int pos) {
 		if(pos == 1) {
 			if(size == 1) {
 				head = null;
@@ -227,7 +227,8 @@ public class CircularDoublyLinkedList<E> {
 		}
 			
 		Node<E> current = head;
-		sB.append(current.getElement().toString());
+		sB.append(size);
+		sB.append("\n\t" + current.getElement().toString());
 		
 		if (current.getNext() == current)
 			return sB.toString();
@@ -240,8 +241,7 @@ public class CircularDoublyLinkedList<E> {
 			}
 			
 			sB.append("\n\t" + current.getElement().toString());
-			current = current.getNext();
-			sB.append("\n\t" + current.getElement().toString());
+
 			return sB.toString();
 	}
 }
