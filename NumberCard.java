@@ -15,4 +15,8 @@ public class NumberCard extends Card{
 	public boolean compareNum(int n) {
 		return num == n;
 	}
+	
+	public String toString() {
+		return this.getColor() + " " + num;
+	}
 }

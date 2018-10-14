@@ -7,17 +7,14 @@ public class Game {
 	private LinkedList<Card> deck;
 	private CircularDoublyLinkedList<Player> players;
 	private ArrayList<Card> discardPile = new ArrayList<>();
-	private boolean playerOrder;
+	private boolean playerOrder = true;
 	
 	public Game() {
 		
 	}
 	
-	public void setPlayerOrder() {
-		if(playerOrder == true)
-			playerOrder = false;
-		else
-			playerOrder = true;
+	public void reversePlayerOrder() {
+		playerOrder = !playerOrder;
 	}
 	
 	

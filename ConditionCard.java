@@ -1,7 +1,6 @@
 package UnoGame;
 
 public class ConditionCard extends Card{
-
 	private String type;
 	
 	public ConditionCard(String color, String type) {
@@ -15,5 +14,9 @@ public class ConditionCard extends Card{
 
 	public boolean compareType(String t) {
 		return type == t;
+	}
+	
+	public String toString() {
+		return this.getColor() + " " + type;
 	}
 }
