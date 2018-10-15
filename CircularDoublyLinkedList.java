@@ -171,4 +171,16 @@ public class CircularDoublyLinkedList<E> {
 			return temp;
 		}
 	}
+	
+	public int getSize() {
+		return size;
+	}
+	
+	public Node<E> getHead() {
+		return head;
+	}
+	
+	public Node<E> getTail() {
+		return tail;
+	}
 }
