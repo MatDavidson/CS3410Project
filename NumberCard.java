@@ -17,6 +17,9 @@ public class NumberCard extends Card{
 	}
 	
 	public String toString() {
-		return this.getColor() + " " + num;
+		if (this.num == -1) {
+			return this.getColor();
+		}
+		else return this.getColor() + " " + num;
 	}
 }

@@ -13,7 +13,7 @@ public abstract class Card{
 	}
 	
 	public boolean compareColor(String c) {
-		return color == c;
+		return color.equals(c);
 	}
 	
 	public abstract String toString();
