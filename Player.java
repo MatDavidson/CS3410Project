@@ -53,5 +53,8 @@ public class Player {
 			discardPile.add(deck.remove(0));
 		}			
 	}
-
+	
+	public String toString() {
+		return name + "'s hand:\n" + hand.display();
+	}
 }
