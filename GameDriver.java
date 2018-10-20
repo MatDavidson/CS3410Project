@@ -11,10 +11,10 @@ public class GameDriver {
 		Game game = new Game();
 		
 		createPlayers(game);
-//		Need to finish these....ugh
-//		playerTurn();      //maybe loop until a player has no cards left in hand?
-//		
-//		endGame();
+		
+		Player winner = playingTheGame(game);
+		
+		System.out.print(winner.getName() + " wins!");
 
 	}
 	
@@ -70,7 +70,7 @@ public class GameDriver {
 //		Does the drawing for the players
 		for(int draws = 0; draws < 7; draws++) {
 			Node<Player> playerNode = players.getHead();
-			while(playerNode.getNext()!=players.getHead()) {
+			while(playerNode.getNext() != players.getHead()) {
 				playerNode.getElement().draw(deck, discardPile);
 				playerNode = playerNode.getNext();
 			}
@@ -84,6 +84,17 @@ public class GameDriver {
 			top = deck.get(0);
 		}
 		discardPile.add(deck.remove(0));
+		
+//*******Remove later, it only prints the hand of all players to test*********		
+//		for(int draws = 0; draws < 7; draws++) {
+			Node<Player> playerNode = players.getHead();
+			while(playerNode.getNext() != players.getHead()) {
+				System.out.println(playerNode.getElement().getHand().display());
+				playerNode = playerNode.getNext();
+			}
+			System.out.println(playerNode.getElement().getHand().display());
+//		}
+//*******Remove later, it only prints the hand of all players to test*********
 	}
 	
 	
@@ -143,5 +154,37 @@ public class GameDriver {
 		}
 	
 	
-	
+//	This method will direct a player's turn, by having them play a card (or draw a new one if they
+//	don't have one they can play), do the special action of a card (if it is one), and will go to the next player's turn and repeat until someone ends
+//	their turn with no cards in hand.
+	public static Player playingTheGame(Game game){
+		Node<Player> playerNode = game.getPlayers().getHead();
+		Player currentPlayer = playerNode.getElement();
+		ArrayList<Card> discardPile = game.getDiscardPile();
+		Scanner scnr = new Scanner(System.in);
+		
+		
+		while(true) {
+			Card topDiscard = discardPile.get(discardPile.size() - 1);
+			System.out.println("Top card on the discard pile: \n" + topDiscard);
+			
+			System.out.println("What card will you play?");
+			String cardPlayed = scnr.nextLine();
+			String[] array = cardPlayed.split(" ");
+			//turn their choice into a card and do stuff************************************************************************************************************************
+			
+//			Checks the players hand to see if it's empty and breaks the endless "While" loop to finish the game.
+			if(currentPlayer.getHandSize() == 0)
+				break;
+			
+			if(game.getPlayerOrder()) 
+				currentPlayer = playerNode.getNext().getElement();
+			
+			else
+				currentPlayer = playerNode.getPrev().getElement();
+			
+		}
+		scnr.close();
+		return currentPlayer;
+	}
 }

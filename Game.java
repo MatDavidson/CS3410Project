@@ -33,7 +33,7 @@ public class Game{
 		return discardPile;
 	}
 
-	public boolean isPlayerOrder() {
+	public boolean getPlayerOrder() {
 		return playerOrder;
 	}
 
