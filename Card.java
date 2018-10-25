@@ -16,5 +16,7 @@ public abstract class Card{
 		return color.equals(c);
 	}
 	
+	public abstract boolean matches(Card card);
+	
 	public abstract String toString();
 }
