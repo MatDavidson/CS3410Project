@@ -1,5 +1,5 @@
 package UnoGame;
-
+//Changes made
 public abstract class Card{
 
 	private String color;
