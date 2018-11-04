@@ -9,7 +9,8 @@ public class GameDriver {
 
 	public static void main(String[] args) {
 		Game game = new Game();
-		
+
+//		Creates players and deals hands to them, then sets the first face-up card on the discard pile from the deck.
 		createPlayers(game);
 		
 		Player winner = playingTheGame(game);
@@ -34,8 +35,6 @@ public class GameDriver {
 			}
 			catch (Exception e) {
 				System.out.println("Please enter an integer between 2 and 10.");
-				numPlayers = 0;
-				numPlayers = scnr.nextInt();
 			}
 		}
 		
@@ -46,8 +45,6 @@ public class GameDriver {
 		}
 		
 		deal(game.getPlayers(), game.getDeck(), game.getDiscardPile());
-		
-		scnr.close();
 	}
 	
 	
@@ -87,12 +84,12 @@ public class GameDriver {
 		
 //*******Remove later, it only prints the hand of all players to test*********		
 //		for(int draws = 0; draws < 7; draws++) {
-			Node<Player> playerNode = players.getHead();
-			while(playerNode.getNext() != players.getHead()) {
-				System.out.println(playerNode.getElement().getHand().display());
-				playerNode = playerNode.getNext();
-			}
-			System.out.println(playerNode.getElement().getHand().display());
+//			Node<Player> playerNode = players.getHead();
+//			while(playerNode.getNext() != players.getHead()) {
+//				System.out.println(playerNode.getElement().getHand().display());
+//				playerNode = playerNode.getNext();
+//			}
+//			System.out.println(playerNode.getElement().getHand().display());
 //		}
 //*******Remove later, it only prints the hand of all players to test*********
 	}
@@ -161,30 +158,56 @@ public class GameDriver {
 		Node<Player> playerNode = game.getPlayers().getHead();
 		Player currentPlayer = playerNode.getElement();
 		ArrayList<Card> discardPile = game.getDiscardPile();
-		Scanner scnr = new Scanner(System.in);
-		
+		Scanner scnr= new Scanner(System.in);
 		
 		while(true) {
 			Card topDiscard = discardPile.get(discardPile.size() - 1);
 			System.out.println("Top card on the discard pile: \n" + topDiscard);
 			
+//			Displays current player's name and hand
+			System.out.println(currentPlayer);
+
 			System.out.println("What card will you play?");
-			String cardPlayed = scnr.nextLine();
-			String[] array = cardPlayed.split(" ");
+			
+			String color = scnr.next();
+			String parameter = scnr.next();
+ 
+			int number = -2;
+			String type = "none";
+			
+//			if(Character.isDigit(info[1].charAt(0))) {
+//				number = Integer.parseInt((info[1].substring(0,1)));
+//			}
+//			else if(Character.isDigit(info[1].charAt(1))) {
+//				number = -1;
+//			}
+//			else if(info[1].equals("Skip") || info[1].equals("Reverse")) {
+//				type = info[1];
+//			}
+//			else if(info.length > 2 && info[2].equals("Two")) {
+//				type = "Draw Two";
+//			}
+//			else if(info.length > 2 && info[2].equals("Four")) {
+//				type = "Draw Four";
 			//turn their choice into a card and do stuff************************************************************************************************************************
+			
 			
 //			Checks the players hand to see if it's empty and breaks the endless "While" loop to finish the game.
 			if(currentPlayer.getHandSize() == 0)
 				break;
 			
-			if(game.getPlayerOrder()) 
-				currentPlayer = playerNode.getNext().getElement();
+//			Controls who the next player will be, depending on the direction of play
+			if(game.getPlayerOrder()) { 
+				playerNode = playerNode.getNext();
+				currentPlayer = playerNode.getElement();
+			}
 			
-			else
-				currentPlayer = playerNode.getPrev().getElement();
-			
+			else {
+				playerNode = playerNode.getPrev();
+				currentPlayer = playerNode.getElement();
+			}
 		}
-		scnr.close();
+		
 		return currentPlayer;
 	}
 }

@@ -9,7 +9,6 @@ public class Game{
 	private CircularDoublyLinkedList<Player> players;
 	private ArrayList<Card> discardPile;
 	private boolean playerOrder = true;
-	private Player turnPlayer;
 	
 	public Game() {
 		deck = GameDriver.createDeck();
@@ -35,10 +34,6 @@ public class Game{
 
 	public boolean getPlayerOrder() {
 		return playerOrder;
-	}
-
-	public Player getTurnPlayer() {
-		return turnPlayer;
 	}
 
 }
