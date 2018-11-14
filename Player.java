@@ -41,16 +41,16 @@ public class Player {
 	
 	public void draw(ArrayList<Card> deck, ArrayList<Card> discardPile) {
 		if(deck.size() > 0) {
-			hand.addFirst(deck.remove(0));
+			hand.addLast(deck.remove(0));
 		}	
 		
 		else {
-			System.out.print("The deck is out of cards. The discard pile will now be shuffled to make a new deck.");
-			GameDriver.shuffle(discardPile);
-			ArrayList<Card> temp = discardPile;
+			Card tempCard = discardPile.remove(discardPile.size() - 1);
+			UnoGUI.shuffle(discardPile);
+			ArrayList<Card> tempDeck = discardPile;
 			discardPile = deck;
-			deck = temp;
-			discardPile.add(deck.remove(0));
+			deck = tempDeck;
+			discardPile.add(tempCard);
 		}			
 	}
 	

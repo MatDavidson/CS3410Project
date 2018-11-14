@@ -3,6 +3,7 @@ package UnoGame;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.Scanner;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
@@ -42,11 +43,15 @@ public class UnoGUI extends Application{
 	private VBox playerTurnScene;
 	private VBox nextTurnScene;
 	private VBox winnerScene;
+	private VBox chooseColorScene;
 	private int maxNumPlayers;
 	private int currentNumPlayers = 0;
 	StackPane scenePanes = new StackPane();
 	Game game = new Game();
-	Player currentPlayer = new Player("Default Bob");
+	Player currentPlayer = new Player("Mork");
+	Player previousPlayer = null;
+	Card topDiscard;
+	
 	
 	public void start(Stage primaryStage) {
 		
@@ -74,17 +79,19 @@ public class UnoGUI extends Application{
 
 		introScene = buildIntroScene();
 		playerNamingScene = buildPlayerNamingScene();
-		playerTurnScene = buildPlayerTurnScene();
+		//playerTurnScene = buildPlayerTurnScene();
 		nextTurnScene = buildNextTurnScene();
 		winnerScene = buildWinnerScene();
+		chooseColorScene = buildChooseColorScene();
 		
 		introScene.setVisible(true);
 		playerNamingScene.setVisible(false);
-		playerTurnScene.setVisible(false);
+		//playerTurnScene.setVisible(false);
 		nextTurnScene.setVisible(false);
 		winnerScene.setVisible(false);
+		chooseColorScene.setVisible(false);
 		
-		scenePanes.getChildren().addAll(introScene, playerNamingScene, playerTurnScene, nextTurnScene, winnerScene);
+		scenePanes.getChildren().addAll(introScene, playerNamingScene, /*playerTurnScene,*/ nextTurnScene, winnerScene, chooseColorScene);
 		scenePanes.setAlignment(Pos.CENTER);
 		scenePanes.setPadding(new Insets(10,10,10,10));
 		return scenePanes;
@@ -121,7 +128,8 @@ public class UnoGUI extends Application{
 		return box;
 	}
 	
-//Build the page that allows players to give themselves names.	
+//	Builds the page that allows players to give themselves names. 
+//	Once the last player is named, it shuffles the deck and deals 7 cards to each player, and places the top card of the deck onto the discard pile.
 	public VBox buildPlayerNamingScene() {
 		
 		Button button;
@@ -135,6 +143,7 @@ public class UnoGUI extends Application{
 		else
 			button = new Button("Start the game!");
 		button.setStyle("-fx-base: dodgerblue");
+		
 		class nextButtonEventHandler implements EventHandler<ActionEvent>{
 			public void handle(ActionEvent e) {
 				if(currentNumPlayers + 1 < maxNumPlayers) {
@@ -146,6 +155,16 @@ public class UnoGUI extends Application{
 					playerNamingScene.setVisible(true);
 				}
 				else {
+					shuffle(game.getDeck());
+					for(int draws = 0; draws < 7; draws++) {
+						Node<Player> playerNode = game.getPlayers().getHead();
+						for(int x = 0; x < maxNumPlayers; x++) {
+							playerNode.getElement().draw(game.getDeck(), game.getDiscardPile());
+							playerNode = playerNode.getNext();
+						}
+					}
+					topDiscard = game.getDeck().remove(0);
+					
 					currentPlayer = game.getPlayers().getHead().getElement();
 					playerTurnScene = buildPlayerTurnScene();
 					scenePanes.getChildren().add(playerTurnScene);
@@ -166,24 +185,70 @@ public class UnoGUI extends Application{
 	public VBox buildPlayerTurnScene() {
 		
 		VBox box = new VBox();
-		Label l1 = new Label("Time to take a spin!");
-		/*To be removed**************************** */
-		Button button = new Button("Go to end.");
-		class finish implements EventHandler<ActionEvent>{
-			public void handle(ActionEvent e) {
-				winnerScene = buildWinnerScene();
-				scenePanes.getChildren().add(winnerScene);
-				playerTurnScene.setVisible(false);
-				winnerScene.setVisible(true);
-			}
+		
+		
+		
+		if(previousPlayer!= null) {
+			Label l0 = new Label(previousPlayer.getName() + " played " + game.getDiscardPile().get(0));
+			box.getChildren().add(l0);
 		}
-		button.setOnAction(new finish());
-		/*To be removed *************************** */
-		box.getChildren().addAll(l1, button);
+		
+		Label opponentHandSize = new Label(buildOpponentHandSizeLabel());
+		
+		Label l1 = new Label("Turn order: ");
+		
+		HBox showTopCard = new HBox();
+		Label l2 = new Label("Top card of discard pile: ");
+		showTopCard.getChildren().add(l2);
+		Button topCardButton;
+		if(topDiscard instanceof NumberCard && ((NumberCard) topDiscard).getNum() == -1) {
+				topCardButton = new Button(topDiscard.getColor());
+				showTopCard.getChildren().add(topCardButton);
+		}
+		else {
+			topCardButton = new Button(topDiscard + "");
+			showTopCard.getChildren().add(topCardButton);
+		}
+		
+		switch(topDiscard.getColor()) {
+		case "Red" : topCardButton.setStyle("-fx-base: red");
+			break;
+		case "Blue" : topCardButton.setStyle("-fx-base: dodgerblue");
+			break;
+		case "Green" : topCardButton.setStyle("-fx-base: mediumseagreen");
+			break;
+		case "Yellow" : topCardButton.setStyle("-fx-base: gold");
+			break;
+		case "Wild" : topCardButton.setStyle("-fx-base: black");
+			break;
+	}
+		
+		box.getChildren().addAll(opponentHandSize, l1, showTopCard);
 		box.setSpacing(15);
 		box.setAlignment(Pos.CENTER);
 		return box;
 	}
+
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	
 //Builds the "Next Turn" page that goes in-between turns to prevent people seeing the next player's hand.
 	public VBox buildNextTurnScene() {
@@ -217,5 +282,99 @@ public class UnoGUI extends Application{
 		box.setSpacing(15);
 		box.setAlignment(Pos.CENTER);
 		return box;
+	}
+	
+	
+//	Builds the page that allows players to choose a color to change to after playing a Wild or Draw Four Wild
+	public VBox buildChooseColorScene() {
+		
+		VBox box = new VBox();
+		Label l1 = new Label("What Color will you change to?");
+		ComboBox<String> colorBox = new ComboBox<String>();
+		colorBox.getItems().addAll("Red", "Blue", "Green", "Yellow");
+		Button button = new Button("Confirm");
+		
+//		This changes the color of the "Confirm" button depending on the color selected.
+		class colorChangeEventHandler implements EventHandler<ActionEvent>{
+			public void handle(ActionEvent e) {
+				String color = colorBox.getValue(); 
+				switch(color) {
+				case "Red" : button.setStyle("-fx-base: red");
+					break;
+				case "Blue" : button.setStyle("-fx-base: dodgerblue");
+					break;
+				case "Green" : button.setStyle("-fx-base: mediumseagreen");
+					break;
+				case "Yellow" : button.setStyle("-fx-base: gold");
+					break;	
+				}
+			}
+		}
+		colorBox.setOnAction(new colorChangeEventHandler());
+		
+//		This creates a "dummy" card that is the color chosen by the player, so that the next player has a card to match to.
+		class colorSelectEventHandler implements EventHandler<ActionEvent>{
+			public void handle(ActionEvent e) {
+				Card card = new NumberCard(colorBox.getValue(), -1);
+				topDiscard = card;
+			}
+		}
+		button.setOnAction(new colorSelectEventHandler());
+		
+		Label yourHand = new Label("Your hand:");
+		HBox playerHand = new HBox();
+		Node<Card> cardMarker = currentPlayer.getHand().getHead();
+		for(int x = 0; x < currentPlayer.getHandSize(); x++) {
+			Button cardButton = new Button(cardMarker.getElement().getColor());
+			switch(cardMarker.getElement().getColor()) {
+				case "Red" : cardButton.setStyle("-fx-base: red");
+					break;
+				case "Blue" : cardButton.setStyle("-fx-base: dodgerblue");
+					break;
+				case "Green" : cardButton.setStyle("-fx-base: mediumseagreen");
+					break;
+				case "Yellow" : cardButton.setStyle("-fx-base: gold");
+					break;
+				case "Wild" : cardButton.setStyle("-fx-base: black");
+					break;
+			}
+			playerHand.getChildren().add(cardButton);
+			cardMarker = cardMarker.getNext();
+		}
+		
+		box.getChildren().addAll(l1, colorBox, button, yourHand, playerHand);
+		box.setSpacing(15);
+		box.setAlignment(Pos.CENTER);
+		return box;
+	}
+	
+//	Creates the contents for the label in the playerTurnScene VBox that displays the hand size of all opponents.
+	public String buildOpponentHandSizeLabel() {
+		
+		StringBuilder handSize = new StringBuilder();
+		Node<Player> firstPlayerNode = game.getPlayers().getHead();
+//		Moves the Node<Player> to be the current player so that the remaining code starts at the current player.
+		while(firstPlayerNode.getElement() != currentPlayer) {
+			firstPlayerNode = firstPlayerNode.getNext();
+		}
+		
+//		Displays the hand sizes of all but the current player.
+		Player player;
+		while(firstPlayerNode.getNext() != firstPlayerNode) {
+			firstPlayerNode = firstPlayerNode.getNext();
+			player = firstPlayerNode.getElement();
+			handSize.append(player.getName() + "'s hand has " + player.getHandSize() + " cards." + "\n");
+		}
+		return handSize +"";
+	}
+	
+//	Method to shuffle the deck.
+	public static void shuffle(ArrayList<Card> deck) {
+		for(int x = (deck.size() - 1); x >= 0; x--) {
+			int j = (int)(Math.random() * (x + 1));
+			Card temp = deck.get(x);
+			deck.set(x, deck.get(j));
+			deck.set(j, temp);
+		}
 	}
 }
