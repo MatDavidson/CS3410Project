@@ -16,7 +16,7 @@ public class Game{
 		discardPile = new ArrayList<Card>();
 	}
 
-	public void reversePlayerOrder() {
+	public void reverse() {
 		playerOrder = !playerOrder;
 	}
 
