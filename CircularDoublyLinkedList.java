@@ -253,5 +253,25 @@ public class CircularDoublyLinkedList<E> {
 
 			return sB.toString();
 	}
+	
+	public E get(int x){
+		Node<E> node = this.getHead();
+		
+		if(x < 0)
+			return null;
+		
+		else if(x == 0) 
+			return node.getElement();
+		
+		else if(x ==  (this.getSize()- 1))
+			return this.getTail().getElement();
+		
+		else {
+			for(int y = 0; y < (x % this.getSize()); y++) {
+				node = node.getNext();
+			}
+		}	
+		return node.getElement();
+	}
 }
 	
