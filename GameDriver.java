@@ -21,6 +21,7 @@ public class GameDriver {
 	
 //	Asks for the number of players (between 2 and 10) and then creates and adds the players to the CDLL "players" for the Game object
 	public static void createPlayers(Game game) {
+		@SuppressWarnings("resource")
 		Scanner scnr = new Scanner(System.in);
 		int numPlayers = 0;
 		
@@ -154,10 +155,12 @@ public class GameDriver {
 //	This method will direct a player's turn, by having them play a card (or draw a new one if they
 //	don't have one they can play), do the special action of a card (if it is one), and will go to the next player's turn and repeat until someone ends
 //	their turn with no cards in hand.
+	@SuppressWarnings("unused")
 	public static Player playingTheGame(Game game){
 		Node<Player> playerNode = game.getPlayers().getHead();
 		Player currentPlayer = playerNode.getElement();
 		ArrayList<Card> discardPile = game.getDiscardPile();
+		@SuppressWarnings("resource")
 		Scanner scnr= new Scanner(System.in);
 		
 		while(true) {
@@ -169,6 +172,7 @@ public class GameDriver {
 
 			System.out.println("What card will you play?");
 			
+			@SuppressWarnings("unused")
 			String color = scnr.next();
 			String parameter = scnr.next();
  

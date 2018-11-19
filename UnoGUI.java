@@ -1,35 +1,18 @@
 package UnoGame;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.Scanner;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.stage.FileChooser;
-import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Stage;
 import javafx.scene.Scene;
-import javafx.scene.chart.BarChart;
-import javafx.scene.chart.CategoryAxis;
-import javafx.scene.chart.NumberAxis;
-import javafx.scene.chart.XYChart;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
-import javafx.scene.control.RadioButton;
-import javafx.scene.control.Slider;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
-import javafx.scene.control.ToggleGroup;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
@@ -40,7 +23,7 @@ public class UnoGUI extends Application{
 	private TextArea mainTextArea;
 	private VBox introScene;
 	private VBox playerNamingScene;
-	private VBox playerTurnScene;
+	private VBox tableScene;
 	private VBox nextTurnScene;
 	private VBox winnerScene;
 	private VBox chooseColorScene;
@@ -155,7 +138,7 @@ public class UnoGUI extends Application{
 					playerNamingScene.setVisible(true);
 				}
 				else {
-					shuffle(game.getDeck());
+					game.shuffle(game.getDeck());
 					for(int draws = 0; draws < 7; draws++) {
 						Node<Player> playerNode = game.getPlayers().getHead();
 						for(int x = 0; x < maxNumPlayers; x++) {
@@ -166,10 +149,10 @@ public class UnoGUI extends Application{
 					topDiscard = game.getDeck().remove(0);
 					
 					currentPlayer = game.getPlayers().getHead().getElement();
-					playerTurnScene = buildPlayerTurnScene();
-					scenePanes.getChildren().add(playerTurnScene);
+					tableScene = buildTableScene();
+					scenePanes.getChildren().add(tableScene);
 					playerNamingScene.setVisible(false);
-					playerTurnScene.setVisible(true);
+					tableScene.setVisible(true);
 				}
 			}
 		}
@@ -182,7 +165,7 @@ public class UnoGUI extends Application{
 	}
 	
 //Builds the page that shows the player's hand, the size of other players' hands, and allows the player to play a card/processes their turn.	
-	public VBox buildPlayerTurnScene() {
+	public VBox buildTableScene() {
 		
 		VBox box = new VBox();
 		
@@ -259,10 +242,10 @@ public class UnoGUI extends Application{
 		button.setStyle("-fx-base: goldenrod");
 		class nextTurnEventHandler implements EventHandler<ActionEvent>{
 			public void handle(ActionEvent e) {
-				playerTurnScene = buildPlayerTurnScene();
-				scenePanes.getChildren().add(playerTurnScene);
+				tableScene = buildTableScene();
+				scenePanes.getChildren().add(tableScene);
 				nextTurnScene.setVisible(false);
-				playerTurnScene.setVisible(true);
+				tableScene.setVisible(true);
 			}
 		}
 		button.setOnAction(new nextTurnEventHandler());
@@ -368,13 +351,18 @@ public class UnoGUI extends Application{
 		return handSize +"";
 	}
 	
-//	Method to shuffle the deck.
-	public static void shuffle(ArrayList<Card> deck) {
-		for(int x = (deck.size() - 1); x >= 0; x--) {
-			int j = (int)(Math.random() * (x + 1));
-			Card temp = deck.get(x);
-			deck.set(x, deck.get(j));
-			deck.set(j, temp);
-		}
+	private void setButtonColor(Button btn, Card card) {
+		switch(card.getColor()) {
+		case "Red" : btn.setStyle("-fx-base: red");
+			break;
+		case "Blue" : btn.setStyle("-fx-base: dodgerblue");
+			break;
+		case "Green" : btn.setStyle("-fx-base: mediumseagreen");
+			break;
+		case "Yellow" : btn.setStyle("-fx-base: gold");
+			break;
+		case "Wild" : btn.setStyle("-fx-base: black");
+			break;
+	}
 	}
 }
