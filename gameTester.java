@@ -31,7 +31,7 @@ public class gameTester {
 		System.out.print(game.getCurrentPlayer().getName() + ", ");
 		game.nextPlayer();
 		
-		game.reversePlayerOrder();
+		game.reverse();
 		
 		System.out.print("\n\n*********************\nReverse Order: ");
 		System.out.print(game.getCurrentPlayer().getName() + ", ");

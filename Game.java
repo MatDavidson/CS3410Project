@@ -19,7 +19,7 @@ public class Game{
 		discardPile = new ArrayList<Card>();
 	}
 
-	public void reversePlayerOrder() {
+	public void reverse() {
 		playerOrder = !playerOrder;
 	}
 
@@ -203,7 +203,7 @@ public class Game{
 			break;
 			
 		case "Reverse":
-			reversePlayerOrder();
+			reverse();
 			nextTurn();
 			break;
 			
