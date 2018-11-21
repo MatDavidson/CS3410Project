@@ -132,6 +132,10 @@ public class Game{
 		if(currentCard instanceof ConditionCard)
 			applyCondition((ConditionCard)currentCard);
 	}
+	
+	public Card getCurrentCard() {
+		return currentCard;
+	}
 
 	//	Method to shuffle the deck.
 	public void shuffle() {
@@ -165,6 +169,9 @@ public class Game{
 		
 		if(deck.isEmpty())
 			reshuffle();
+		
+		if(currentCard.matches(p.getHand().getHead().getElement()))
+			play(p.getHand().getHead().getElement());
 	}
 	
 	public void reshuffle() {

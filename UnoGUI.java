@@ -1,6 +1,5 @@
 package UnoGame;
 
-import java.util.ArrayList;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -29,23 +28,23 @@ public class UnoGUI extends Application{
 	private VBox chooseColorScene;
 	private int maxNumPlayers;
 	private int currentNumPlayers = 0;
-	StackPane scenePanes = new StackPane();
-	Game game = new Game();
-	Node<Player> currentPlayerNode;
-	Player currentPlayer = new Player("Mork");
-	Player previousPlayer = null;
-	Card topDiscard;
-	int cardNumberInHand = 0;
-	Node<Card> currentPlayerCardNode;
-	Card currentPlayerCard;
-	boolean canDraw = true;
-	
-	
+	private StackPane scenePanes = new StackPane();
+	private Game game = new Game();
+	private Node<Player> currentPlayerNode;
+	private Player currentPlayer;
+	private Player previousPlayer = null;
+	private Card topDiscard;
+	private int cardNumberInHand = 0;
+	private Node<Card> currentPlayerCardNode;
+	private Card currentPlayerCard;
+//	private boolean canDraw = true;
+	private StringBuilder sb = new StringBuilder();
+	private ComboBox<Integer> numPlayersBox = new ComboBox<Integer>();
 	public void start(Stage primaryStage) {
 		
 		try {
 			StackPane root = buildRoot();
-			Scene introScene = new Scene(root, 600, 800);
+			Scene introScene = new Scene(root, 600, 600);
 			introScene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
 			primaryStage.setScene(introScene);
 			primaryStage.setTitle("Uno in Java");
@@ -68,18 +67,18 @@ public class UnoGUI extends Application{
 		introScene = buildIntroScene();
 		playerNamingScene = buildPlayerNamingScene();
 		//playerTurnScene = buildPlayerTurnScene();
-		nextTurnScene = buildNextTurnScene();
-		winnerScene = buildWinnerScene();
-		chooseColorScene = buildChooseColorScene();
+		//nextTurnScene = buildNextTurnScene();
+		//winnerScene = buildWinnerScene();
+		//chooseColorScene = buildChooseColorScene();
 		
 		introScene.setVisible(true);
 		playerNamingScene.setVisible(false);
 		//playerTurnScene.setVisible(false);
-		nextTurnScene.setVisible(false);
-		winnerScene.setVisible(false);
-		chooseColorScene.setVisible(false);
+		//nextTurnScene.setVisible(false);
+		//winnerScene.setVisible(false);
+		//chooseColorScene.setVisible(false);
 		
-		scenePanes.getChildren().addAll(introScene, playerNamingScene, /*playerTurnScene,*/ nextTurnScene, winnerScene, chooseColorScene);
+		scenePanes.getChildren().addAll(introScene, playerNamingScene /*playerTurnScene, nextTurnScene, winnerScene, chooseColorScene*/);
 		scenePanes.setAlignment(Pos.CENTER);
 		scenePanes.setPadding(new Insets(10,10,10,10));
 		return scenePanes;
@@ -94,7 +93,7 @@ public class UnoGUI extends Application{
 		intro.setTextFill(Color.rgb(204, 0, 0));
 		Label numberOfPlayers = new Label("How many players will there be?");
 		numberOfPlayers.setTextFill(Color.rgb(0, 102, 102));
-		ComboBox<Integer> numPlayersBox = new ComboBox<Integer>();
+		
 		numPlayersBox.getItems().addAll(2,3,4,5,6,7,8,9,10);
 		Button button = new Button("Begin Game");
 		button.setStyle("-fx-base: mediumseagreen");
@@ -134,34 +133,59 @@ public class UnoGUI extends Application{
 		
 		class nextButtonEventHandler implements EventHandler<ActionEvent>{
 			public void handle(ActionEvent e) {
-				game.getPlayers().addLast(new Player(nameField.getText()));
-				if(currentNumPlayers + 1 < maxNumPlayers) {
-					currentNumPlayers++;
-					playerNamingScene.setVisible(false);
-					playerNamingScene = buildPlayerNamingScene();
-					scenePanes.getChildren().add(playerNamingScene);
-					playerNamingScene.setVisible(true);
-				}
-				else {
-					game.shuffle();
-					for(int draws = 0; draws < 7; draws++) {
-						Node<Player> playerNode = game.getPlayers().getHead();
-						for(int x = 0; x < maxNumPlayers; x++) {
-							game.draw();
-							playerNode = playerNode.getNext();
-						}
-					}
-
-					topDiscard = game.getDeck().remove(0);
-					
+				int max = numPlayersBox.getValue();
+				
+				sb.append(nameField.getText() + " ");
+				nameField.clear();
+				currentNumPlayers++;
+				l1.setText("Please choose a name, Player " + (currentNumPlayers + 1));
+				
+				if(currentNumPlayers == max) {
+					game.createPlayers(sb.toString());
+					currentPlayerNode = game.getPlayers().getHead();
 					currentPlayer = game.getPlayers().getHead().getElement();
+					game.deal();
 					tableScene = buildTableScene();
 					scenePanes.getChildren().add(tableScene);
 					playerNamingScene.setVisible(false);
 					tableScene.setVisible(true);
+					nextTurnScene = buildNextTurnScene();
+					scenePanes.getChildren().add(nextTurnScene);
 
+					nextTurnScene.setVisible(false);
+					winnerScene.setVisible(false);
+					chooseColorScene.setVisible(false);
 				}
 			}
+				
+//				game.getPlayers().addLast(new Player(nameField.getText()));
+//				if(currentNumPlayers + 1 < maxNumPlayers) {
+//					currentNumPlayers++;
+//					playerNamingScene.setVisible(false);
+//					playerNamingScene = buildPlayerNamingScene();
+//					scenePanes.getChildren().add(playerNamingScene);
+//					playerNamingScene.setVisible(true);
+//				}
+//				else {
+//					game.shuffle();
+//					for(int draws = 0; draws < 7; draws++) {
+//						Node<Player> playerNode = game.getPlayers().getHead();
+//						for(int x = 0; x < maxNumPlayers; x++) {
+//							game.draw();
+//							game.nextPlayer();
+//						}
+//					}
+//
+//					topDiscard = game.getDeck().remove(0);
+//					
+//					currentPlayer = game.getPlayers().getHead().getElement();
+//					tableScene = buildTableScene();
+//					scenePanes.getChildren().add(tableScene);
+//					playerNamingScene.setVisible(false);
+//					tableScene.setVisible(true);
+//
+//				}
+//			}
 		}
 		button.setOnAction(new nextButtonEventHandler());
 		
@@ -197,18 +221,20 @@ public class UnoGUI extends Application{
 			showTopCard.getChildren().add(topCardButton);
 		}
 		
-		switch(topDiscard.getColor()) {
-		case "Red" : topCardButton.setStyle("-fx-base: red");
-			break;
-		case "Blue" : topCardButton.setStyle("-fx-base: dodgerblue");
-			break;
-		case "Green" : topCardButton.setStyle("-fx-base: mediumseagreen");
-			break;
-		case "Yellow" : topCardButton.setStyle("-fx-base: gold");
-			break;
-		case "Wild" : topCardButton.setStyle("-fx-base: black");
-			break;
-		}
+		setButtonColor(topCardButton, game.getCurrentCard());
+		
+//		switch(topDiscard.getColor()) {
+//		case "Red" : topCardButton.setStyle("-fx-base: red");
+//			break;
+//		case "Blue" : topCardButton.setStyle("-fx-base: dodgerblue");
+//			break;
+//		case "Green" : topCardButton.setStyle("-fx-base: mediumseagreen");
+//			break;
+//		case "Yellow" : topCardButton.setStyle("-fx-base: gold");
+//			break;
+//		case "Wild" : topCardButton.setStyle("-fx-base: black");
+//			break;
+//		}
 		mainTextArea = new TextArea();
 		
 		Label playersHandLabel = new Label(currentPlayer.getName() + "'s Hand:");
@@ -252,7 +278,7 @@ public class UnoGUI extends Application{
 			cardMarker = cardMarker.getNext();
 		}
 		
-		canDraw = true;
+//		canDraw = true;
 		
 		HBox drawAndSkip = new HBox();
 		
@@ -261,29 +287,32 @@ public class UnoGUI extends Application{
 		
 		class deckDrawEvent implements EventHandler<ActionEvent>{
 			public void handle(ActionEvent e) {
-				if(canDraw) {
+				if(!game.getCurrentPlayer().hasDrawn()) {
+					
+					
 					game.draw();
-					Card newCard = currentPlayer.getHand().getTail().getElement();
+					Card newCard = currentPlayer.getHand().getHead().getElement();
 					Button newButton = new Button(newCard + "");
-					switch(newCard.getColor()) {
-					case "Red" : newButton.setStyle("-fx-base: red");
-						break;
-					case "Blue" : newButton.setStyle("-fx-base: dodgerblue");
-						break;
-					case "Green" : newButton.setStyle("-fx-base: mediumseagreen");
-						break;
-					case "Yellow" : newButton.setStyle("-fx-base: gold");
-						break;
-					case "Wild" : newButton.setStyle("-fx-base: black");
-						break;
-					}
+					
+					setButtonColor(newButton, newCard);
+//					switch(newCard.getColor()) {
+//					case "Red" : newButton.setStyle("-fx-base: red");
+//						break;
+//					case "Blue" : newButton.setStyle("-fx-base: dodgerblue");
+//						break;
+//					case "Green" : newButton.setStyle("-fx-base: mediumseagreen");
+//						break;
+//					case "Yellow" : newButton.setStyle("-fx-base: gold");
+//						break;
+//					case "Wild" : newButton.setStyle("-fx-base: black");
+//						break;
+//					}
 					playerHand.getChildren().add(newButton);
-					canDraw = false;
+//					canDraw = false;
 				}
 				else
 					mainTextArea.setText("");
-					mainTextArea.setText("You have already drawn from the deck this turn. \n" +
-							"Skip your turn if you have no matches.");
+					mainTextArea.setText("You have already drawn from the deck this turn. \n");
 			}
 		}
 		deckDraw.setOnAction(new deckDrawEvent());
