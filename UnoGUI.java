@@ -40,6 +40,19 @@ public class UnoGUI extends Application{
 //	private boolean canDraw = true;
 	private StringBuilder sb = new StringBuilder();
 	private ComboBox<Integer> numPlayersBox = new ComboBox<Integer>();
+	private Label lblNextTurn;
+	private Label playersHandLabel;
+	private Button topCardButton = new Button();
+	
+	private Button btnLeft = new Button("Left");
+	private Button btnRight = new Button("Right");
+	private Button btnCard1 = new Button();
+	private Button btnCard2 = new Button();
+	private Button btnCard3 = new Button();
+	private Button btnCard4 = new Button();
+	private Button btnCard5 = new Button();
+	private Button[] cardBtns = {btnCard1, btnCard2, btnCard3, btnCard4, btnCard5};
+	
 	public void start(Stage primaryStage) {
 		
 		try {
@@ -143,17 +156,19 @@ public class UnoGUI extends Application{
 				if(currentNumPlayers == max) {
 					game.createPlayers(sb.toString());
 					currentPlayerNode = game.getPlayers().getHead();
-					currentPlayer = game.getPlayers().getHead().getElement();
+					currentPlayer = game.getCurrentPlayer();
 					game.deal();
 					tableScene = buildTableScene();
 					scenePanes.getChildren().add(tableScene);
 					playerNamingScene.setVisible(false);
 					tableScene.setVisible(true);
+					currentPlayerCardNode = currentPlayer.getHand().getHead();
+					updateHand();
 					nextTurnScene = buildNextTurnScene();
 					scenePanes.getChildren().add(nextTurnScene);
 
 					nextTurnScene.setVisible(false);
-					winnerScene.setVisible(false);
+//					winnerScene.setVisible(false);
 					chooseColorScene.setVisible(false);
 				}
 			}
@@ -202,7 +217,7 @@ public class UnoGUI extends Application{
 		VBox box = new VBox();
 		
 		if(previousPlayer!= null) {
-			Label l0 = new Label("Last play: " + previousPlayer.getName() + " played " + game.getDiscardPile().get(game.getDiscardPile().size() - 1));
+			Label l0 = new Label("Last play: " + previousPlayer.getName() + " played " + game.getCurrentCard());
 			box.getChildren().add(l0);
 		}
 		
@@ -211,18 +226,18 @@ public class UnoGUI extends Application{
 		HBox showTopCard = new HBox();
 		Label l2 = new Label("Top card of discard pile: ");
 		showTopCard.getChildren().add(l2);
-		Button topCardButton;
-		if(topDiscard instanceof NumberCard && ((NumberCard) topDiscard).getNum() == -1) {
-				topCardButton = new Button(topDiscard.getColor());
-				showTopCard.getChildren().add(topCardButton);
-		}
-		else {
-			topCardButton = new Button(topDiscard + "");
-			showTopCard.getChildren().add(topCardButton);
-		}
 		
-		setButtonColor(topCardButton, game.getCurrentCard());
+		updateButton(topCardButton, game.getCurrentCard());
+		showTopCard.getChildren().add(topCardButton);
 		
+//		if(topDiscard instanceof NumberCard && ((NumberCard) topDiscard).getNum() == -1) {
+//				topCardButton = new Button(topDiscard.getColor());
+//				showTopCard.getChildren().add(topCardButton);
+//		}
+//		else {
+//			topCardButton = new Button(topDiscard + "");
+//			showTopCard.getChildren().add(topCardButton);
+//		}
 //		switch(topDiscard.getColor()) {
 //		case "Red" : topCardButton.setStyle("-fx-base: red");
 //			break;
@@ -237,46 +252,69 @@ public class UnoGUI extends Application{
 //		}
 		mainTextArea = new TextArea();
 		
-		Label playersHandLabel = new Label(currentPlayer.getName() + "'s Hand:");
+		playersHandLabel = new Label(game.getCurrentPlayer().getName() + "'s Hand:");
 		
 		
 		class cardTurnProcessing implements EventHandler<ActionEvent>{
 			public void handle(ActionEvent e) {
-				currentPlayerCardNode = currentPlayer.getHand().getHead();
-				for(int x = 0; x < cardNumberInHand; x++) {     //  won't work b/c cardNumberInHand changes all the time. Need a second variable maybe?
-					currentPlayerCardNode = currentPlayerCardNode.getNext();
-				}
-				currentPlayerCard = currentPlayerCardNode.getElement();
-				if(currentPlayerCard.matches(topDiscard)){
-					mainTextArea.setText("Matches #: " + cardNumberInHand);
-				}
-				else
-					mainTextArea.setText("");
-					mainTextArea.setText("That card does not match. Try another, or draw a card from the deck.");
+				
+				
+//				currentPlayerCardNode = currentPlayer.getHand().getHead();
+//				for(int x = 0; x < cardNumberInHand; x++) {     //  won't work b/c cardNumberInHand changes all the time. Need a second variable maybe?
+//					currentPlayerCardNode = currentPlayerCardNode.getNext();
+//				}
+//				currentPlayerCard = currentPlayerCardNode.getElement();
+//				if(currentPlayerCard.matches(topDiscard)){
+//					mainTextArea.setText("Matches #: " + cardNumberInHand);
+//				}
+//				else
+//					mainTextArea.setText("");
+//					mainTextArea.setText("That card does not match. Try another, or draw a card from the deck.");
 			}
 		}
 		
 		HBox playerHand = new HBox();
-		Node<Card> cardMarker = currentPlayer.getHand().getHead();
-		for(int x = 0; x < currentPlayer.getHandSize(); x++) {
-			Button cardButton = new Button(cardMarker.getElement() + "");
-			switch(cardMarker.getElement().getColor()) {
-				case "Red" : cardButton.setStyle("-fx-base: red");
-					break;
-				case "Blue" : cardButton.setStyle("-fx-base: dodgerblue");
-					break;
-				case "Green" : cardButton.setStyle("-fx-base: mediumseagreen");
-					break;
-				case "Yellow" : cardButton.setStyle("-fx-base: gold");
-					break;
-				case "Wild" : cardButton.setStyle("-fx-base: black");
-					break;
-			}
-			cardButton.setOnAction(new cardTurnProcessing());
-			cardNumberInHand++;
-			playerHand.getChildren().add(cardButton);
-			cardMarker = cardMarker.getNext();
-		}
+		
+		playerHand.getChildren().addAll(btnLeft, btnCard1, btnCard2, btnCard3, btnCard4, btnCard5, btnRight);
+		
+		card1EventHandler c1 = new card1EventHandler();
+		btnCard1.setOnAction(c1);
+		card2EventHandler c2 = new card2EventHandler();
+		btnCard1.setOnAction(c2);
+		card3EventHandler c3 = new card3EventHandler();
+		btnCard1.setOnAction(c3);
+		card4EventHandler c4 = new card4EventHandler();
+		btnCard1.setOnAction(c4);
+		card5EventHandler c5 = new card5EventHandler();
+		btnCard1.setOnAction(c5);
+		
+		
+		
+		
+		
+//		Node<Card> cardMarker = currentPlayer.getHand().getHead();
+//		for(int x = 0; x < currentPlayer.getHandSize(); x++) {
+//			Button cardButton = new Button(cardMarker.getElement() + "");
+//			setButtonColor(cardButton, cardMarker.getElement());
+//			
+//			switch(cardMarker.getElement().getColor()) {
+//				case "Red" : cardButton.setStyle("-fx-base: red");
+//					break;
+//				case "Blue" : cardButton.setStyle("-fx-base: dodgerblue");
+//					break;
+//				case "Green" : cardButton.setStyle("-fx-base: mediumseagreen");
+//					break;
+//				case "Yellow" : cardButton.setStyle("-fx-base: gold");
+//					break;
+//				case "Wild" : cardButton.setStyle("-fx-base: black");
+//					break;
+//			}
+//			
+//			cardButton.setOnAction(new cardTurnProcessing());
+//			cardNumberInHand++;
+//			playerHand.getChildren().add(cardButton);
+//			cardMarker = cardMarker.getNext();
+//		}
 		
 //		canDraw = true;
 		
@@ -289,12 +327,12 @@ public class UnoGUI extends Application{
 			public void handle(ActionEvent e) {
 				if(!game.getCurrentPlayer().hasDrawn()) {
 					
-					
+					Card temp = game.getCurrentCard();
 					game.draw();
-					Card newCard = currentPlayer.getHand().getHead().getElement();
-					Button newButton = new Button(newCard + "");
-					
-					setButtonColor(newButton, newCard);
+//					Card newCard = currentPlayer.getHand().getHead().getElement();
+//					Button newButton = new Button(newCard + "");
+//					
+//					setButtonColor(newButton, newCard);
 //					switch(newCard.getColor()) {
 //					case "Red" : newButton.setStyle("-fx-base: red");
 //						break;
@@ -307,8 +345,14 @@ public class UnoGUI extends Application{
 //					case "Wild" : newButton.setStyle("-fx-base: black");
 //						break;
 //					}
-					playerHand.getChildren().add(newButton);
+//					playerHand.getChildren().add(newButton);
 //					canDraw = false;
+					currentPlayerCardNode = game.getCurrentPlayer().getHand().getHead();
+					updateHand();
+					if(temp != game.getCurrentCard())
+						game.getCurrentPlayer().setHasDrawn(true);
+					updateButton(topCardButton, game.getCurrentCard());
+					
 				}
 				else
 					mainTextArea.setText("");
@@ -317,21 +361,27 @@ public class UnoGUI extends Application{
 		}
 		deckDraw.setOnAction(new deckDrawEvent());
 		
-		Button skipTurn = new Button("Skip Turn");
+		Button skipTurn = new Button("End Turn");
 		skipTurn.setStyle("-fx-base: lightcoral");
 		
 		class skipTurnEvent implements EventHandler<ActionEvent>{
 			public void handle(ActionEvent e) {
-				if(game.getPlayerOrder())
-					currentPlayerNode = currentPlayerNode.getNext();
-				else
-					currentPlayerNode = currentPlayerNode.getPrev();
-				currentPlayer = currentPlayerNode.getElement();
+				if(game.getCurrentPlayer().hasPlayed() || game.getCurrentPlayer().hasDrawn()) {
+					game.nextTurn();
+//				if(game.getPlayerOrder())
+//					currentPlayerNode = currentPlayerNode.getNext();
+//				else
+//					currentPlayerNode = currentPlayerNode.getPrev();
+//				currentPlayer = currentPlayerNode.getElement();
 				
-				nextTurnScene = buildNextTurnScene();
-				scenePanes.getChildren().add(nextTurnScene);
+//				nextTurnScene = buildNextTurnScene();
+//				scenePanes.getChildren().add(nextTurnScene);
 				tableScene.setVisible(false);
+				lblNextTurn.setText("It's " + game.getCurrentPlayer().getName() + "'s turn.");
+				playersHandLabel.setText(game.getCurrentPlayer().getName());
 				nextTurnScene.setVisible(true);
+				}
+				mainTextArea.setText("Your turn isn't over!");
 			}
 		}
 		skipTurn.setOnAction(new skipTurnEvent());
@@ -343,46 +393,101 @@ public class UnoGUI extends Application{
 		box.setAlignment(Pos.CENTER);
 		return box;
 	}
+	
+	class card1EventHandler implements EventHandler<ActionEvent>{
+		public void handle(ActionEvent e) {
+			game.play(currentPlayerCardNode.getElement());
+			updateHand();
+			updateButton(topCardButton, currentPlayerCardNode.getElement());
+		}
+	}
+	
+	class card2EventHandler implements EventHandler<ActionEvent>{
+		public void handle(ActionEvent e) {
+			game.play(currentPlayerCardNode.getNext().getElement());
+			updateHand();
+			updateButton(topCardButton, currentPlayerCardNode.getElement());
+		}
+	}
+	
+	class card3EventHandler implements EventHandler<ActionEvent>{
+		public void handle(ActionEvent e) {
+			game.play(currentPlayerCardNode.getNext().getNext().getElement());
+			updateHand();
+			updateButton(topCardButton, currentPlayerCardNode.getElement());
+		}
+	}
+	
+	class card4EventHandler implements EventHandler<ActionEvent>{
+		public void handle(ActionEvent e) {
+			game.play(currentPlayerCardNode.getNext().getNext().getNext().getElement());
+			updateHand();
+			updateButton(topCardButton, currentPlayerCardNode.getElement());
+		}
+	}
+	
+	class card5EventHandler implements EventHandler<ActionEvent>{
+		public void handle(ActionEvent e) {
+			game.play(currentPlayerCardNode.getNext().getNext().getNext().getNext().getElement());
+			updateHand();
+			updateButton(topCardButton, currentPlayerCardNode.getElement());
+		}
+	}
 
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+	public void updateButton(Button b, Card c) {
+		setButtonColor(b, c);
+		
+		if(c instanceof NumberCard)
+			b.setText(String.valueOf(((NumberCard) c).getNum()));
+		else
+			b.setText(((ConditionCard) c).getType());
+	}
+
+	public void updateHand() {
+		Player p = game.getCurrentPlayer();
+		if(p.getHandSize() < 6) {
+			for(Button b: cardBtns) {
+				b.setVisible(false);
+			}
+			btnLeft.setVisible(false);
+			btnRight.setVisible(false);
+			for(int i = 0; i < p.getHandSize(); i++) {
+				cardBtns[i].setVisible(true);
+				updateButton(cardBtns[i], p.getHand().get(i));
+			}
+		}
+		else {
+			Node<Card> temp = currentPlayerCardNode;
+			btnLeft.setVisible(true);
+			btnRight.setVisible(true);
+			for(int i = 0; i < 5; i++) {
+				cardBtns[i].setVisible(true);
+				updateButton(cardBtns[i], temp.getElement());
+				temp = temp.getNext();
+			}	
+		}
+	}
 	
 //Builds the "Next Turn" page that goes in-between turns to prevent people seeing the next player's hand.
 	public VBox buildNextTurnScene() {
 		
 		VBox box = new VBox();
-		Label l1 = new Label("It's " + currentPlayer.getName() + "'s turn.");
+		lblNextTurn = new Label("It's " + currentPlayer.getName() + "'s turn.");
 		Button button = new Button("Begin the next turn!");
 		button.setStyle("-fx-base: goldenrod");
 		class nextTurnEventHandler implements EventHandler<ActionEvent>{
 			public void handle(ActionEvent e) {
-				tableScene = buildTableScene();
-				scenePanes.getChildren().add(tableScene);
+				currentPlayerCardNode = game.getCurrentPlayer().getHand().getHead();
+				updateHand();
+//				scenePanes.getChildren().add(tableScene);
 				nextTurnScene.setVisible(false);
+				mainTextArea.clear();
 				tableScene.setVisible(true);
 			}
 		}
 		button.setOnAction(new nextTurnEventHandler());
 
-		box.getChildren().addAll(l1, button);
+		box.getChildren().addAll(lblNextTurn, button);
 		box.setSpacing(15);
 		box.setAlignment(Pos.CENTER);
 		return box;
@@ -503,7 +608,7 @@ public class UnoGUI extends Application{
 			break;
 		case "Yellow" : btn.setStyle("-fx-base: gold");
 			break;
-		case "Wild" : btn.setStyle("-fx-base: black");
+		case "Black" : btn.setStyle("-fx-base: black");
 			break;
 	}
 	}

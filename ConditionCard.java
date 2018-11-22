@@ -20,16 +20,14 @@ public class ConditionCard extends Card{
 		if(this.getColor().equals("Black"))
 			return true;
 		
-		else if(this.getColor().equals(card.getColor()))
-			return true;
-		
-		else if(card instanceof NumberCard)
-			return false;
-		
 		else if(type.equals(((ConditionCard) card).getType()))
 			return true;
 		
-		return false;
+		else if(this.getColor().equals(card.getColor()))
+			return true;
+		
+		else 
+			return false;
 	}
 	
 	public String toString() {
