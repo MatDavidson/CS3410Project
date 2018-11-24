@@ -45,7 +45,7 @@ public class GameDriver {
 			game.getPlayers().addLast(new Player(name));
 		}
 		
-		deal(game.getPlayers(), game.getDeck(), game.getDiscardPile());
+//		deal(game.getPlayers(), game.getDeck(), game.getDiscardPile());
 	}
 	
 	
@@ -60,40 +60,40 @@ public class GameDriver {
 	}
 	
 //	Deals 7 cards to all the players and sets the first card on the discard pile.
-	public static void deal(CircularDoublyLinkedList<Player> players, ArrayList<Card> deck, ArrayList<Card> discardPile) {
-		
-//		Shuffles deck
-		shuffle(deck);
-		
-//		Does the drawing for the players
-		for(int draws = 0; draws < 7; draws++) {
-			Node<Player> playerNode = players.getHead();
-			while(playerNode.getNext() != players.getHead()) {
-				playerNode.getElement().draw(deck, discardPile);
-				playerNode = playerNode.getNext();
-			}
-			playerNode.getElement().draw(deck, discardPile);
-		}
-		
-//		Draws top card from deck and sets it as first card. It makes sure it isn't a Wild card, because the rules are weird with those.
-		Card top = deck.get(0);
-		while(top.getColor().equals("Wild")) {
-			shuffle(deck);
-			top = deck.get(0);
-		}
-		discardPile.add(deck.remove(0));
-		
-//*******Remove later, it only prints the hand of all players to test*********		
+//	public static void deal(CircularDoublyLinkedList<Player> players, ArrayList<Card> deck, ArrayList<Card> discardPile) {
+//		
+////		Shuffles deck
+//		shuffle(deck);
+//		
+////		Does the drawing for the players
 //		for(int draws = 0; draws < 7; draws++) {
 //			Node<Player> playerNode = players.getHead();
 //			while(playerNode.getNext() != players.getHead()) {
-//				System.out.println(playerNode.getElement().getHand().display());
+//				playerNode.getElement().draw(deck, discardPile);
 //				playerNode = playerNode.getNext();
 //			}
-//			System.out.println(playerNode.getElement().getHand().display());
+//			playerNode.getElement().draw(deck, discardPile);
 //		}
-//*******Remove later, it only prints the hand of all players to test*********
-	}
+//		
+////		Draws top card from deck and sets it as first card. It makes sure it isn't a Wild card, because the rules are weird with those.
+//		Card top = deck.get(0);
+//		while(top.getColor().equals("Wild")) {
+//			shuffle(deck);
+//			top = deck.get(0);
+//		}
+//		discardPile.add(deck.remove(0));
+//		
+////*******Remove later, it only prints the hand of all players to test*********		
+////		for(int draws = 0; draws < 7; draws++) {
+////			Node<Player> playerNode = players.getHead();
+////			while(playerNode.getNext() != players.getHead()) {
+////				System.out.println(playerNode.getElement().getHand().display());
+////				playerNode = playerNode.getNext();
+////			}
+////			System.out.println(playerNode.getElement().getHand().display());
+////		}
+////*******Remove later, it only prints the hand of all players to test*********
+//	}
 	
 	
 	public static ArrayList<Card> createDeck(){

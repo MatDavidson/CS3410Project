@@ -17,13 +17,10 @@ public class NumberCard extends Card{
 	}
 	
 	public boolean matches(Card card) {
-		if(this.getColor().equals("Black"))
+		if(card instanceof NumberCard && num == ((NumberCard) card).getNum())
 			return true;
 		
-		else if(num == ((NumberCard) card).getNum())
-			return true;
-		
-		else if(this.getColor().equals(card.getColor()))
+		else if(card.getColor().equals("Black") || card.getColor().equals(this.getColor()))
 			return true;
 		
 		else 

@@ -17,13 +17,10 @@ public class ConditionCard extends Card{
 	}
 	
 	public boolean matches(Card card) {
-		if(this.getColor().equals("Black"))
+		if(card instanceof ConditionCard && type == ((ConditionCard) card).getType())
 			return true;
 		
-		else if(type.equals(((ConditionCard) card).getType()))
-			return true;
-		
-		else if(this.getColor().equals(card.getColor()))
+		else if(card.getColor().equals("Black") || card.getColor().equals(this.getColor()))
 			return true;
 		
 		else 

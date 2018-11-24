@@ -214,7 +214,7 @@ public class CircularDoublyLinkedList<E> {
 
 		else {
 			Node<E> node1 = head;					
-			for(int i = 1; i < pos; i++) {
+			for(int i = 0; i < pos; i++) {
 				node1 = node1.getNext();			
 			}	
 			Node<E> n = node1.getNext();		

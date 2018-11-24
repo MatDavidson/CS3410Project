@@ -169,7 +169,7 @@ public class UnoGUI extends Application{
 
 					nextTurnScene.setVisible(false);
 //					winnerScene.setVisible(false);
-					chooseColorScene.setVisible(false);
+//					chooseColorScene.setVisible(false);
 				}
 			}
 				
@@ -255,10 +255,10 @@ public class UnoGUI extends Application{
 		playersHandLabel = new Label(game.getCurrentPlayer().getName() + "'s Hand:");
 		
 		
-		class cardTurnProcessing implements EventHandler<ActionEvent>{
-			public void handle(ActionEvent e) {
-				
-				
+//		class cardTurnProcessing implements EventHandler<ActionEvent>{
+//			public void handle(ActionEvent e) {
+//				
+//				
 //				currentPlayerCardNode = currentPlayer.getHand().getHead();
 //				for(int x = 0; x < cardNumberInHand; x++) {     //  won't work b/c cardNumberInHand changes all the time. Need a second variable maybe?
 //					currentPlayerCardNode = currentPlayerCardNode.getNext();
@@ -270,8 +270,8 @@ public class UnoGUI extends Application{
 //				else
 //					mainTextArea.setText("");
 //					mainTextArea.setText("That card does not match. Try another, or draw a card from the deck.");
-			}
-		}
+//			}
+//		}
 		
 		HBox playerHand = new HBox();
 		
@@ -396,41 +396,51 @@ public class UnoGUI extends Application{
 	
 	class card1EventHandler implements EventHandler<ActionEvent>{
 		public void handle(ActionEvent e) {
-			game.play(currentPlayerCardNode.getElement());
-			updateHand();
-			updateButton(topCardButton, currentPlayerCardNode.getElement());
-		}
+			if(game.play(currentPlayerCardNode.getElement())) {
+				updateButton(topCardButton, currentPlayerCardNode.getElement());
+				updateHand();
+				tableScene.setVisible(false);
+				nextTurnScene.setVisible(true);
+			}
+			else
+				mainTextArea.appendText("\nThat card doesn't match!");
+		}	
 	}
 	
 	class card2EventHandler implements EventHandler<ActionEvent>{
 		public void handle(ActionEvent e) {
 			game.play(currentPlayerCardNode.getNext().getElement());
-			updateHand();
+			
 			updateButton(topCardButton, currentPlayerCardNode.getElement());
+			updateHand();
 		}
 	}
 	
 	class card3EventHandler implements EventHandler<ActionEvent>{
 		public void handle(ActionEvent e) {
 			game.play(currentPlayerCardNode.getNext().getNext().getElement());
-			updateHand();
+			
 			updateButton(topCardButton, currentPlayerCardNode.getElement());
+			updateHand();
 		}
 	}
 	
 	class card4EventHandler implements EventHandler<ActionEvent>{
 		public void handle(ActionEvent e) {
 			game.play(currentPlayerCardNode.getNext().getNext().getNext().getElement());
-			updateHand();
+			
 			updateButton(topCardButton, currentPlayerCardNode.getElement());
+			updateHand();
 		}
 	}
 	
 	class card5EventHandler implements EventHandler<ActionEvent>{
 		public void handle(ActionEvent e) {
 			game.play(currentPlayerCardNode.getNext().getNext().getNext().getNext().getElement());
-			updateHand();
+			
 			updateButton(topCardButton, currentPlayerCardNode.getElement());
+			updateHand();
+			
 		}
 	}
 

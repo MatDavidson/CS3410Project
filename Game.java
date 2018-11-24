@@ -13,20 +13,24 @@ public class Game{
 	private Node<Player> currentPlayer;
 	private Card currentCard;
 
+	//Constructor
 	public Game() {
 		deck = createDeck();
 		players = new CircularDoublyLinkedList<Player>();
 		discardPile = new ArrayList<Card>();
 	}
 
+	//Switches order of play by changing the boolean condition playerOrder
 	public void reverse() {
 		playerOrder = !playerOrder;
 	}
 
+	//returns playerOrder
 	public boolean getPlayerOrder() {
 		return playerOrder;
 	}
 
+	//Builds the deck (taken from gameDriver)
 	public ArrayList<Card> createDeck(){
 
 		ArrayList<Card> deck2 = new ArrayList<Card>();
@@ -78,10 +82,12 @@ public class Game{
 		return deck2;
 	}
 
+	//returns the deck
 	public ArrayList<Card> getDeck() {
 		return deck;
 	}
 
+	//Accepts a String of player names and creates all the players
 	public void createPlayers(String input) {
 		String[] names = input.split(" ");
 		for(String s: names) {
@@ -90,6 +96,7 @@ public class Game{
 		currentPlayer = players.getHead();
 	}
 
+	//Advances control to the next player
 	public void nextPlayer() {
 		if(playerOrder)
 			currentPlayer = currentPlayer.getNext();
@@ -97,15 +104,17 @@ public class Game{
 			currentPlayer = currentPlayer.getPrev();
 	}
 	
+	//Returns the currently active player
 	public Player getCurrentPlayer() {
 		return currentPlayer.getElement();
 	}
 
+	//returns the list of players
 	public CircularDoublyLinkedList<Player> getPlayers() {
 		return players;
 	}
 
-	//	Deals 7 cards to all the players and sets the first card on the discard pile.
+	//	Deals 7 cards to all the players and sets the first card on the discard pile.(taken from gameDriver)
 	public void deal() {
 
 		//		Shuffles deck
@@ -133,11 +142,12 @@ public class Game{
 			applyCondition((ConditionCard)currentCard);
 	}
 	
+	//returns the current top of the discard pile
 	public Card getCurrentCard() {
 		return currentCard;
 	}
 
-	//	Method to shuffle the deck.
+	//	Method to shuffle the deck. (taken from UnoGUI)
 	public void shuffle() {
 		for(int x = (deck.size() - 1); x >= 0; x--) {
 			int j = (int)(Math.random() * (x + 1));
@@ -147,13 +157,16 @@ public class Game{
 		}
 	}
 	
+	//Method that will check to see if if any players have one card but did not call uno, than checks the current player
 	public void callUno() {
-		if(checkUno())
+		if(checkUno()) {
 			return;
+		}	
 		else if(getCurrentPlayer().hasOne())
 			getCurrentPlayer().setCalledUno(true);
 	}
 	
+	//checks if the current player has drawn, if not gives the player a card (taken from UnoGUI)
 	public void draw() {
 		Player p = getCurrentPlayer();
 		
@@ -170,10 +183,11 @@ public class Game{
 		if(deck.isEmpty())
 			reshuffle();
 		
-		if(currentCard.matches(p.getHand().getHead().getElement()))
+		if(matches(p.getHand().getHead().getElement()))
 			play(p.getHand().getHead().getElement());
 	}
 	
+	//Transfers the cards in the discard pile to the deck and shuffles 
 	public void reshuffle() {
 		while(!discardPile.isEmpty()) {
 			deck.add(discardPile.remove(0));
@@ -182,19 +196,41 @@ public class Game{
 		}
 	}
 	
-	public void play(Card c) {
-		if(c.matches(currentCard)) {
+	//Plays the card from the current player's hand.
+	public boolean play(Card c) {
+		if(matches(c)) {
 			currentCard = c;
-			getCurrentPlayer().getHand().deleteAtPos(getCurrentPlayer().findPos(c));
+			Player p = getCurrentPlayer();
+			p.getHand().deleteAtPos(p.findPos(c));
 			discardPile.add(c);
-		}
-		if(c instanceof ConditionCard) {
-			applyCondition((ConditionCard)c);
+			if(c instanceof ConditionCard) 
+				applyCondition((ConditionCard)c);
+			p.setHasPlayed(true);
+			nextTurn();
+			return true;
 		}	
 		else
-			nextTurn();
+			return false;
 	}
 	
+	//Checks to see if the card arg can be played on the current card (compiled from the card classes)
+	public boolean matches(Card card) {
+		if(card.getColor().equals("Black") || currentCard.getColor().equals("Black") || card.getColor().equals(currentCard.getColor()))
+			return true;
+		else if(card instanceof ConditionCard && currentCard instanceof ConditionCard) {
+			if(((ConditionCard)card).getType() == ((ConditionCard) currentCard).getType())
+			return true;
+		}
+		else if(card instanceof NumberCard && currentCard instanceof NumberCard) {
+			if(((NumberCard)card).getNum() == ((NumberCard) currentCard).getNum())
+			return true;
+		}
+		else 
+			return false;
+		return false;
+	}
+	
+	//Applies the condition of a condition card
 	public void applyCondition(ConditionCard c) {
 		switch (c.getType()) {
 		
@@ -275,6 +311,10 @@ public class Game{
 			}
 		}
 		return false;
+	}
+	
+	public void setCurrentCard(Card c) {
+		currentCard = c;
 	}
 }
 
